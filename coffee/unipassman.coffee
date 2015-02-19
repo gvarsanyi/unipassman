@@ -7,7 +7,7 @@ plugins = [
 class ArgumentError extends Error
   constructor: (msg) ->
     @status = 'ARGUMENT_MISMATCH'
-    super msg
+    super @msg = msg
 
 class NoPasswordManagerError extends Error
   constructor: ->

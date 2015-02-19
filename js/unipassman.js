@@ -11,7 +11,7 @@ ArgumentError = (function(superClass) {
 
   function ArgumentError(msg) {
     this.status = 'ARGUMENT_MISMATCH';
-    ArgumentError.__super__.constructor.call(this, msg);
+    ArgumentError.__super__.constructor.call(this, this.msg = msg);
   }
 
   return ArgumentError;

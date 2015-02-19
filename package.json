@@ -1,6 +1,6 @@
 {
   "name": "unipassman",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "password manager aggregator for node.js",
   "main": "js/unipassman.js",
   "bin": {
