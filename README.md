@@ -3,6 +3,13 @@ unipassman
 
 Coverage for different password managers/wallets.
 
+# Install
+## Global (for CLI)
+    npm install -g unipassman
+## Local for your app
+    cd /path/to/your/app
+    npm install unipassman --save
+
 # Usage
 
 ## API
