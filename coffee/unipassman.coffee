@@ -15,9 +15,10 @@ class NoPasswordManagerError extends Error
     super @message = 'No password manager was found'
 
 class NoPasswordForUserError extends Error
-  constructor: (username) ->
+  constructor: (group, username) ->
     @status = 'NO_PASSWORD_FOR_USER'
-    super @message = 'No password was found for username: ' + username
+    super @message = 'No password was found for ' + username +
+                     (if group then ' (group: ' + group + ')' else '')
 
 
 class PasswordManager
@@ -61,57 +62,63 @@ class PasswordManager
     return
 
 
-  read: (username, cb) =>
-    signiture = 'PasswordManager::read(username, callback)'
+  read: (group, username, cb) =>
+    signiture = 'PasswordManager::read(group, username, callback)'
     unless typeof cb is 'function'
       throw new ArgumentError 'Callback must be a function: ' + signiture
     unless typeof username is 'string'
       return cb new ArgumentError 'Username must be a string: ' + signiture
-    unless username
+    unless username and username isnt ':'
       return cb new ArgumentError 'Username must have a value: ' + signiture
 
-    process = (username) =>
+    if typeof group isnt 'string' or not group
+      group = 'UNGROUPED'
+
+    process = (group, username) =>
       if @manager
-        return @manager.read username, (err, password) ->
+        return @manager.read group, username, (err, password) ->
           if err or typeof password isnt 'string'
-            return cb new NoPasswordForUserError username
+            return cb new NoPasswordForUserError group, username
           cb null, password
       cb new NoPasswordManagerError
 
     if @ready
-      return process username
+      return process group, username
 
-    do (username) =>
+    do (group, username) =>
       @readyCue.push ->
-        process username
+        process group, username
     return
 
 
-  write: (username, password, cb) =>
+  write: (group, username, password, cb) =>
     signiture = 'PasswordManager::write(username, password, callback)'
     unless typeof cb is 'function'
       throw new ArgumentError 'Callback must be a function: ' + signiture
     unless typeof username is 'string'
       return cb new ArgumentError 'Username must be a string: ' + signiture
-    unless username
+    unless username and username isnt ':'
       return cb new ArgumentError 'Username must have a value: ' + signiture
     unless typeof password is 'string'
       return cb new ArgumentError 'Password must be a string: ' + signiture
 
-    process = (username, password) =>
+    if typeof group isnt 'string' or not group
+      group = 'UNGROUPED'
+
+    process = (group, username, password) =>
       if @manager
-        return @manager.write username, password, (err) ->
+        return @manager.write group, username, password, (err) ->
           if err
             return cb err
           cb()
       cb new NoPasswordManagerError
 
     if @ready
-      return process username, password
+      return process group, username, password
 
-    do (username, password) =>
+    do (group, username, password) =>
       @readyCue.push ->
-        process username, password
+        process group, username, password
     return
 
 

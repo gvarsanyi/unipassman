@@ -27,7 +27,7 @@ Coverage for different password managers/wallets.
 ### Read
     var unipassman = require('unipassman');
 
-    unipassman.read('username', function (err, password) {
+    unipassman.read('pwgroup', 'username', function (err, password) {
       if (err) {
         if (err.status === 'NO_PASSWORD_MANAGER') {
           console.error('No password manager was found');
@@ -45,7 +45,7 @@ Coverage for different password managers/wallets.
 ### Store
     var unipassman = require('unipassman');
 
-    unipassman.write('username', 'my_secret', function (err) {
+    unipassman.write('pwgroup', 'username', 'my_secret', function (err) {
       if (err) {
         if (err.status === 'NO_PASSWORD_MANAGER') {
           console.error('No password manager was found');
@@ -66,11 +66,11 @@ Coverage for different password managers/wallets.
 
 ### Read
 On your console:
-    unipassman username
+    unipassman [pwgroup] username
     # will return password for username (with exit code 0) or appropriate error message (with exit code 1)
 
 ### Store
-    unipassman username password
+    unipassman [pwgroup] username --set password
     # will return password for username (with exit code 0) or appropriate error message (with exit code 1)
 
 

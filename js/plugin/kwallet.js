@@ -21,15 +21,15 @@ KWallet = (function() {
     })(this));
   };
 
-  KWallet.prototype.read = function(username, cb) {
+  KWallet.prototype.read = function(group, username, cb) {
     var cmd;
-    cmd = 'kwalletcli -q -f kscd -e ' + esc(username);
+    cmd = 'kwalletcli -q -f ' + esc(group) + ' -e ' + esc(username);
     return ChildProcess.exec(cmd, cb);
   };
 
-  KWallet.prototype.write = function(username, password, cb) {
+  KWallet.prototype.write = function(group, username, password, cb) {
     var cmd;
-    cmd = 'kwalletcli -q -f kscd -e ' + esc(username) + ' -p ' + esc(password);
+    cmd = 'kwalletcli -q -f ' + esc(group) + ' -e ' + esc(username) + ' -p ' + esc(password);
     return ChildProcess.exec(cmd, cb);
   };
 

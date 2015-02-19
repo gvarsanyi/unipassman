@@ -16,7 +16,7 @@ spy = (cmd, opts, cb) ->
 
   setTimeout ->
     cb response...
-  , 100
+  , 10
 
 
 ChildProcess = require 'child_process'

@@ -33,9 +33,9 @@ NoPasswordManagerError = (function(_super) {
 NoPasswordForUserError = (function(_super) {
   __extends(NoPasswordForUserError, _super);
 
-  function NoPasswordForUserError(username) {
+  function NoPasswordForUserError(group, username) {
     this.status = 'NO_PASSWORD_FOR_USER';
-    NoPasswordForUserError.__super__.constructor.call(this, this.message = 'No password was found for username: ' + username);
+    NoPasswordForUserError.__super__.constructor.call(this, this.message = 'No password was found for ' + username + (group ? ' (group: ' + group + ')' : ''));
   }
 
   return NoPasswordForUserError;
@@ -101,24 +101,27 @@ PasswordManager = (function() {
     this.readyCue.push(process);
   };
 
-  PasswordManager.prototype.read = function(username, cb) {
+  PasswordManager.prototype.read = function(group, username, cb) {
     var process, signiture;
-    signiture = 'PasswordManager::read(username, callback)';
+    signiture = 'PasswordManager::read(group, username, callback)';
     if (typeof cb !== 'function') {
       throw new ArgumentError('Callback must be a function: ' + signiture);
     }
     if (typeof username !== 'string') {
       return cb(new ArgumentError('Username must be a string: ' + signiture));
     }
-    if (!username) {
+    if (!(username && username !== ':')) {
       return cb(new ArgumentError('Username must have a value: ' + signiture));
     }
+    if (typeof group !== 'string' || !group) {
+      group = 'UNGROUPED';
+    }
     process = (function(_this) {
-      return function(username) {
+      return function(group, username) {
         if (_this.manager) {
-          return _this.manager.read(username, function(err, password) {
+          return _this.manager.read(group, username, function(err, password) {
             if (err || typeof password !== 'string') {
-              return cb(new NoPasswordForUserError(username));
+              return cb(new NoPasswordForUserError(group, username));
             }
             return cb(null, password);
           });
@@ -127,18 +130,18 @@ PasswordManager = (function() {
       };
     })(this);
     if (this.ready) {
-      return process(username);
+      return process(group, username);
     }
     (function(_this) {
-      return (function(username) {
+      return (function(group, username) {
         return _this.readyCue.push(function() {
-          return process(username);
+          return process(group, username);
         });
       });
-    })(this)(username);
+    })(this)(group, username);
   };
 
-  PasswordManager.prototype.write = function(username, password, cb) {
+  PasswordManager.prototype.write = function(group, username, password, cb) {
     var process, signiture;
     signiture = 'PasswordManager::write(username, password, callback)';
     if (typeof cb !== 'function') {
@@ -147,16 +150,19 @@ PasswordManager = (function() {
     if (typeof username !== 'string') {
       return cb(new ArgumentError('Username must be a string: ' + signiture));
     }
-    if (!username) {
+    if (!(username && username !== ':')) {
       return cb(new ArgumentError('Username must have a value: ' + signiture));
     }
     if (typeof password !== 'string') {
       return cb(new ArgumentError('Password must be a string: ' + signiture));
     }
+    if (typeof group !== 'string' || !group) {
+      group = 'UNGROUPED';
+    }
     process = (function(_this) {
-      return function(username, password) {
+      return function(group, username, password) {
         if (_this.manager) {
-          return _this.manager.write(username, password, function(err) {
+          return _this.manager.write(group, username, password, function(err) {
             if (err) {
               return cb(err);
             }
@@ -167,15 +173,15 @@ PasswordManager = (function() {
       };
     })(this);
     if (this.ready) {
-      return process(username, password);
+      return process(group, username, password);
     }
     (function(_this) {
-      return (function(username, password) {
+      return (function(group, username, password) {
         return _this.readyCue.push(function() {
-          return process(username, password);
+          return process(group, username, password);
         });
       });
-    })(this)(username, password);
+    })(this)(group, username, password);
   };
 
   return PasswordManager;

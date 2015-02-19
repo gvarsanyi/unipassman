@@ -10,12 +10,13 @@ class KWallet
     ChildProcess.exec 'which kwalletcli', (err) =>
       cb err
 
-  read: (username, cb) =>
-    cmd = 'kwalletcli -q -f kscd -e ' + esc username
+  read: (group, username, cb) =>
+    cmd = 'kwalletcli -q -f ' + esc(group) + ' -e ' + esc username
     ChildProcess.exec cmd, cb
 
-  write: (username, password, cb) =>
-    cmd = 'kwalletcli -q -f kscd -e ' + esc(username) + ' -p ' + esc password
+  write: (group, username, password, cb) =>
+    cmd = 'kwalletcli -q -f ' + esc(group) + ' -e ' + esc(username) + ' -p ' +
+          esc password
     ChildProcess.exec cmd, cb
 
 

@@ -7,7 +7,9 @@ build:
 	@echo " -- done"
 
 test: build
-	@echo "TEST"
-	@node_modules/.bin/coffee ./test/generic.coffee
-	@node_modules/.bin/coffee ./test/plugin/*
+	@for FILE in `find test/ | grep .coffee | grep -v /mock/`; \
+	do \
+		echo TEST: $$FILE; \
+		node_modules/.bin/coffee $$FILE; \
+	done;
 	@echo " -- done"
